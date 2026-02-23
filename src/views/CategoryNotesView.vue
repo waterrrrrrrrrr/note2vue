@@ -93,7 +93,7 @@ const goBack = () => {
 };
 
 const createNote = () => {
-  router.push(`/note/new?categoryId=${categoryId}`);
+  router.push(`/note/new?categoryId=${categoryId.value}`);
 };
 
 const viewNote = (id) => {

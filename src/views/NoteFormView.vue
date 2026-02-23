@@ -11,7 +11,7 @@
 
     <div v-else class="note-form-container">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
-        <el-form-item label="所属分类" prop="categoryId">
+        <el-form-item v-if="isEdit || !route.query.categoryId" label="所属分类" prop="categoryId">
           <el-select v-model="form.categoryId" placeholder="请选择分类" style="width: 100%">
             <el-option
               v-for="category in categories"
@@ -20,6 +20,9 @@
               :value="category.id"
             />
           </el-select>
+        </el-form-item>
+        <el-form-item v-else label="所属分类">
+          <span>{{ categoryTitle }}</span>
         </el-form-item>
 
         <el-form-item label="笔记标题" prop="title">
@@ -100,6 +103,12 @@ const props = defineProps({
 const isEdit = computed(() => !!props.noteId);
 const loading = ref(false);
 const formRef = ref(null);
+
+const categoryTitle = computed(() => {
+  const categoryId = Number(form.value.categoryId);
+  const category = categories.value.find(c => Number(c.id) === categoryId);
+  return category?.title || '未知分类';
+});
 
 const form = ref({
   categoryId: null,
