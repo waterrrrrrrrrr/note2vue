@@ -13,6 +13,10 @@
           class="search-input"
           @input="handleSearch"
         />
+        <el-button type="danger" plain @click="handleReset">
+          <el-icon><Delete /></el-icon>
+          重置
+        </el-button>
       </div>
     </el-header>
     <el-container style="height: calc(100vh - 60px);">
@@ -48,6 +52,8 @@ import { ref, computed, onMounted, provide } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useCategories } from './composables/useCategories.js';
 import { useNotes } from './composables/useNotes.js';
+import { ElMessageBox } from 'element-plus';
+import db from './db/index.js';
 
 const route = useRoute();
 const router = useRouter();
@@ -91,6 +97,26 @@ const handleSearch = () => {
       loadCategories();
     }
   }, 300);
+};
+
+const handleReset = () => {
+  ElMessageBox.confirm(
+    '确定要重置所有数据吗？此操作将永久删除所有分类和笔记，无法恢复！',
+    '重置数据',
+    {
+      confirmButtonText: '确定重置',
+      cancelButtonText: '取消',
+      type: 'warning',
+      confirmButtonClass: 'el-button--danger'
+    }
+  ).then(async () => {
+    await db.delete();
+    await db.open();
+    searchKeyword.value = '';
+    await loadCategories();
+    router.push('/categories');
+    ElMessageBox.alert('数据已重置成功', '提示', { type: 'success' });
+  }).catch(() => {});
 };
 </script>
 
