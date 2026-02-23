@@ -2,8 +2,8 @@ import { ref } from 'vue';
 import db from '../db/index';
 import { ElMessage } from 'element-plus';
 
-export function useCategories() {
-  const categories = ref([]);
+export function useCategories(externalCategories = null) {
+  const categories = externalCategories || ref([]);
 
   const loadCategories = async () => {
     try {

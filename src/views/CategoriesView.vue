@@ -39,7 +39,7 @@
 
     <div v-else-if="!searchKeyword" class="categories-list">
       <el-table
-        :data="categories"
+        :data="sharedCategories"
         style="width: 100%"
         @row-click="handleCategoryRowClick"
         :row-style="{ cursor: 'pointer' }"
@@ -68,7 +68,7 @@
         </el-table-column>
       </el-table>
 
-      <div v-if="categories.length === 0" class="empty-state">
+      <div v-if="sharedCategories.length === 0" class="empty-state">
         <el-empty description="暂无分类，点击上方按钮添加">
           <el-button type="primary" @click="showAddDialog">添加分类</el-button>
         </el-empty>
@@ -104,7 +104,8 @@ import db from '../db/index';
 
 const router = useRouter();
 const searchKeyword = inject('searchKeyword', ref(''));
-const { categories, loadCategories, addCategory, updateCategory, deleteCategory } = useCategories();
+const sharedCategories = inject('sharedCategories', ref([]));
+const { loadCategories, addCategory, updateCategory, deleteCategory } = useCategories(sharedCategories);
 const { notes } = useNotes();
 
 const dialogVisible = ref(false);
@@ -123,7 +124,7 @@ const rules = {
 };
 
 const loadNoteCounts = async () => {
-  for (const category of categories.value) {
+  for (const category of sharedCategories.value) {
     const count = await db.notes.where('categoryId').equals(category.id).count();
     noteCounts.value[category.id] = count;
   }
@@ -134,7 +135,7 @@ onMounted(async () => {
   await loadNoteCounts();
 });
 
-watch(categories, () => {
+watch(sharedCategories, () => {
   loadNoteCounts();
 }, { deep: true });
 

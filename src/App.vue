@@ -31,7 +31,7 @@
             <span>首页</span>
           </el-menu-item>
           <el-menu-item
-            v-for="category in categories"
+            v-for="category in sharedCategories"
             :key="`menu-${category.id}`"
             :index="`/category/${category.id}`"
           >
@@ -57,7 +57,8 @@ import db from './db/index.js';
 
 const route = useRoute();
 const router = useRouter();
-const { categories, loadCategories } = useCategories();
+const sharedCategories = ref([]);
+const { loadCategories } = useCategories(sharedCategories);
 const { searchNotes } = useNotes();
 
 const searchKeyword = ref('');
@@ -72,6 +73,7 @@ const activeMenu = computed(() => {
 });
 
 provide('searchKeyword', searchKeyword);
+provide('sharedCategories', sharedCategories);
 
 onMounted(() => {
   loadCategories();
